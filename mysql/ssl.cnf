@@ -1,0 +1,5 @@
+[mysqld]
+ssl
+ssl-ca=/tmp/ssl/ca.pem
+ssl-cert=/tmp/ssl/server-cert.pem
+ssl-key=/tmp/ssl/server-key.pem
