@@ -21,6 +21,8 @@ jobs:
       - name: Install mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
+          mkdir -p /tmp/ssl
+          bash mysql_ssl_rsa_setup.sh /tmp/ssl
           sudo systemctl start mysql.service
           mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot -proot
 
@@ -35,7 +37,8 @@ jobs:
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
           brew install mariadb@10.5
-          /usr/local/opt/mariadb@10.5/bin/mysql_install_db
+          mkdir -p /tmp/ssl
+          bash mysql_ssl_rsa_setup.sh /tmp/ssl
           /usr/local/opt/mariadb@10.5/bin/mysql.server start
           sleep 3
           /usr/local/opt/mariadb@10.5/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
@@ -46,6 +49,13 @@ jobs:
           mysql -urunner -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+
+      - name: Install mysql (Windows) pre
+        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        shell: bash
+        run: |
+          ls -al
+          bash mysql_ssl_rsa_setup.sh C:\Temp
 
       - name: Install mysql (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
