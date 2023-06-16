@@ -25,11 +25,12 @@ jobs:
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
           sudo systemctl start mysql.service
-          mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot -proot
+          mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
+          mysql -uroot -proot -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -proot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
@@ -52,6 +53,7 @@ jobs:
       - name: Test mysql (MacOS) connection
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
+          $(brew prefix mariadb@10.5)/bin/mysql -urunner -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
           $(brew prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
           $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
           $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
@@ -75,6 +77,7 @@ jobs:
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
         run: |
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
           "C:\tools\mysql\current\bin\mysql" -uroot -e "SELECT 1"
           "C:\tools\mysql\current\bin\mysql" -ussl --ssl-ca=C:\tools\mysql\current\lib -e "SELECT 1"
           "C:\tools\mysql\current\bin\mysql" -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
