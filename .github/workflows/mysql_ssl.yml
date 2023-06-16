@@ -17,13 +17,13 @@ jobs:
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
           pwd
-          mkdir -p /tmp/ssl
-          bash mysql_ssl_rsa_setup.sh /tmp/ssl
-          ls -al /tmp/ssl
           ls -al /etc/mysql/
           ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
+          mkdir -p /tmp/ssl
+          sudo bash mysql_ssl_rsa_setup.sh /tmp/ssl
+          ls -al /tmp/ssl
           sudo systemctl start mysql.service
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
@@ -39,13 +39,13 @@ jobs:
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
           brew install mariadb@10.5
-          mkdir -p /tmp/ssl
-          bash mysql_ssl_rsa_setup.sh /tmp/ssl
-          ls -al /tmp/ssl
           ls -al $(brew prefix mariadb@10.5)/
           ls -al $(brew prefix mariadb@10.5)/conf.d/
           ls -al $(brew prefix mariadb@10.5)/mysql.conf.d/
           cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/conf.d
+          mkdir -p /tmp/ssl
+          bash mysql_ssl_rsa_setup.sh /tmp/ssl
+          ls -al /tmp/ssl
           $(brew prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
           $(brew prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
