@@ -22,7 +22,8 @@ jobs:
           ls -al /tmp/ssl
           ls -al /etc/mysql/
           ls -al /etc/mysql/conf.d/
-          cp mysql/ssl.conf /etc/mysql/conf.d
+          ls -al /etc/mysql/mysql.conf.d/
+          cp mysql/ssl.cnf /etc/mysql/conf.d/
           sudo systemctl start mysql.service
           mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot -proot
 
@@ -42,7 +43,8 @@ jobs:
           ls -al /tmp/ssl
           ls -al /etc/mysql/
           ls -al /etc/mysql/conf.d/
-          cp mysql/ssl.conf /etc/mysql/conf.d
+          ls -al /etc/mysql/mysql.conf.d/
+          cp mysql/ssl.cnf /etc/mysql/conf.d
           $(brew prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
           $(brew prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
