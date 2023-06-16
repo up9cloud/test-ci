@@ -22,7 +22,7 @@ jobs:
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
           mkdir -p /tmp/ssl
-          sudo bash mysql_ssl_rsa_setup.sh /tmp/ssl
+          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
           sudo systemctl start mysql.service
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
@@ -44,7 +44,7 @@ jobs:
           ls -al $(brew prefix mariadb@10.5)/mysql.conf.d/
           cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/conf.d
           mkdir -p /tmp/ssl
-          bash mysql_ssl_rsa_setup.sh /tmp/ssl
+          bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
           $(brew prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           ls -al
-          bash mysql_ssl_rsa_setup.sh C:\Temp
+          bash mysql/mysql_ssl_rsa_setup.sh C:\Temp
 
       - name: Install mysql (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
