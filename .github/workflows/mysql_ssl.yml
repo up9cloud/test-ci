@@ -21,7 +21,7 @@ jobs:
           ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
-          mkdir -p /tmp/ssl
+          sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
           sudo systemctl start mysql.service
@@ -39,24 +39,24 @@ jobs:
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
           brew install mariadb@10.5
-          ls -al $(brew prefix mariadb@10.5)/
-          ls -al $(brew prefix mariadb@10.5)/conf.d/
-          ls -al $(brew prefix mariadb@10.5)/mysql.conf.d/
+          ls -al $(brew --prefix mariadb@10.5)/
+          ls -al $(brew --prefix mariadb@10.5)/conf.d/
+          ls -al $(brew --prefix mariadb@10.5)/mysql.conf.d/
           cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/conf.d
           mkdir -p /tmp/ssl
           bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
-          $(brew prefix mariadb@10.5)/bin/mysql.server start
+          $(brew --prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
-          $(brew prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
+          $(brew --prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
 
       - name: Test mysql (MacOS) connection
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
-          $(brew prefix mariadb@10.5)/bin/mysql -urunner -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
-          $(brew prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
-          $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
-          $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
+          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
+          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
 
       - name: Install mysql (Windows) pre
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
