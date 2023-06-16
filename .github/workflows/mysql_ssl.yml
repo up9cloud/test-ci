@@ -12,12 +12,17 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
-
+      # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
       - name: Install mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
+          pwd
           mkdir -p /tmp/ssl
           bash mysql_ssl_rsa_setup.sh /tmp/ssl
+          ls -al /tmp/ssl
+          ls -al /etc/mysql/
+          ls -al /etc/mysql/conf.d/
+          cp mysql/ssl.conf /etc/mysql/conf.d
           sudo systemctl start mysql.service
           mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot -proot
 
@@ -34,16 +39,20 @@ jobs:
           brew install mariadb@10.5
           mkdir -p /tmp/ssl
           bash mysql_ssl_rsa_setup.sh /tmp/ssl
-          /usr/local/opt/mariadb@10.5/bin/mysql.server start
+          ls -al /tmp/ssl
+          ls -al /etc/mysql/
+          ls -al /etc/mysql/conf.d/
+          cp mysql/ssl.conf /etc/mysql/conf.d
+          $(brew prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
-          /usr/local/opt/mariadb@10.5/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
+          $(brew prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
 
       - name: Test mysql (MacOS) connection
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
-          mysql -urunner -e "SELECT 1"
-          mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
-          mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+          $(brew prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
+          $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
+          $(brew prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
 
       - name: Install mysql (Windows) pre
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
@@ -56,6 +65,7 @@ jobs:
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
         run: |
+          dir /a
           choco install mysql
           "C:\tools\mysql\current\bin\mysql" -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot
 
