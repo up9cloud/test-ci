@@ -22,8 +22,8 @@ jobs:
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
           sudo mkdir -p /tmp/ssl
-          #sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
+          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
+          #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
           head /tmp/ssl/ca.pem
           set +e
