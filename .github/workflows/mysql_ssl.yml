@@ -25,7 +25,7 @@ jobs:
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
-          head /tmp/ssl/ca.pem
+          cat /tmp/ssl/*.pem
           set +e
           sudo systemctl start mysql.service
           code=$?
