@@ -38,6 +38,7 @@ jobs:
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
+          sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
           mysql -uroot -proot -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -proot -e "SELECT 1"
