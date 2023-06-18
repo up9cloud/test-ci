@@ -25,8 +25,8 @@ jobs:
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
           head /tmp/ssl/ca.pem
-          sudo systemctl start mysql.service
           set +e
+          sudo systemctl start mysql.service
           if [ $? -ne "0" ]; then
             journalctl -xeu mysql.service
           fi
