@@ -40,10 +40,12 @@ jobs:
         run: |
           sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
-          mysql -uroot -proot -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
+          mysql -uroot -proot -e "\\s"
+          mysql -uroot -proot -e "SHOW VARIABLES LIKE '%ssl%';"
+          mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
           mysql -uroot -proot -e "SELECT 1"
-          mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
-          mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+          mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
+          mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
       - name: Install mysql (MacOS)
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
