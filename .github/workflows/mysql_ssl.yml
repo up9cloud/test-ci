@@ -26,6 +26,9 @@ jobs:
           ls -al /tmp/ssl
           head /tmp/ssl/ca.pem
           sudo systemctl start mysql.service
+          if [ $? -ne "0" ]; then
+            journalctl -xeu mysql.service
+          fi
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
