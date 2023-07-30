@@ -35,7 +35,7 @@ jobs:
           ls -al /tmp/ssl
       - name: Up mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
-        run:
+        run: |
           set +e
           sudo systemctl start mysql.service
           code=$?
