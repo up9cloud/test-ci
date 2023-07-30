@@ -22,23 +22,27 @@ jobs:
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
       - name: Setup mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        env:
+          MYSQL_BASE_DIR: ${{ steps.setup-mysql.outputs.base-dir }}
         run: |
           pwd
-          ls -al ${{ steps.setup-mysql.outputs.base-dir }}
-          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/
-          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/conf.d/
-          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/mysql.conf.d/
-          sudo cp mysql/ssl.cnf ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/conf.d/
+          ls -al ${MYSQL_BASE_DIR}
+          ls -al ${MYSQL_BASE_DIR}/etc/mysql/
+          ls -al ${MYSQL_BASE_DIR}/etc/mysql/conf.d/
+          ls -al ${MYSQL_BASE_DIR}/etc/mysql/mysql.conf.d/
+          sudo cp mysql/ssl.cnf ${MYSQL_BASE_DIR}/etc/mysql/conf.d/
           sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
       - name: Up mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        env:
+          MYSQL_BASE_DIR: ${{ steps.setup-mysql.outputs.base-dir }}
         run: |
           set +e
           ${{ steps.setup-mysql.outputs.base-dir }}/bin/mysqld \
-            --defaults-file=${{ steps.setup-mysql.outputs.base-dir }}/etc/my.cnf \
+            --defaults-file=${MYSQL_BASE_DIR}/etc/my.cnf \
             --user=root
           code=$?
           if [ $code -ne 0 ]; then
