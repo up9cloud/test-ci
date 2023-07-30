@@ -26,11 +26,16 @@ jobs:
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
           sudo cat /tmp/ssl/*.pem
-      - name: Up mysql (Linux)
+      - id: setup-mysql
+        name: Up mysql (Linux)
         uses: shogo82148/actions-setup-mysql@v1
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         with:
           mysql-version: "8.0"
+          my-cnf: |
+            ssl-ca="/tmp/ssl/ca.pem"
+            ssl-cert="/tmp/ssl/server-cert.pem"
+            ssl-key="/tmp/ssl/server-key.pem"
 #       - name: Up mysql (Linux)
 #         if: runner.os == 'Linux' && matrix.backend == 'mysql'
 #         run:
@@ -47,7 +52,6 @@ jobs:
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
-          sudo chmod 777 -R /tmp/ssl
           sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
           mysql -uroot -e "\\s"
