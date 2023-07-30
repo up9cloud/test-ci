@@ -13,7 +13,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
-      - name: Install mysql (Linux)
+      - name: Setup mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
           pwd
@@ -26,14 +26,21 @@ jobs:
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
           sudo cat /tmp/ssl/*.pem
-          set +e
-          sudo systemctl start mysql.service
-          code=$?
-          if [ $code -ne 0 ]; then
-            journalctl -xeu mysql.service
-            exit $code
-          fi
-          set -e
+      - name: Up mysql (Linux)
+        uses: shogo82148/actions-setup-mysql@v1
+        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        with:
+          mysql-version: "8.0"
+      - name: Up mysql (Linux)
+        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+#           set +e
+#           sudo systemctl start mysql.service
+#           code=$?
+#           if [ $code -ne 0 ]; then
+#             journalctl -xeu mysql.service
+#             exit $code
+#           fi
+#           set -e
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
