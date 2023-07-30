@@ -31,9 +31,9 @@ jobs:
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         with:
           mysql-version: "8.0"
-      - name: Up mysql (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
-        run:
+#       - name: Up mysql (Linux)
+#         if: runner.os == 'Linux' && matrix.backend == 'mysql'
+#         run:
 #           set +e
 #           sudo systemctl start mysql.service
 #           code=$?
@@ -43,7 +43,6 @@ jobs:
 #           fi
 #           set -e
 #           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
-          mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
@@ -51,10 +50,10 @@ jobs:
           sudo chmod 777 -R /tmp/ssl
           sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
-          mysql -uroot -proot -e "\\s"
-          mysql -uroot -proot -e "SHOW VARIABLES LIKE '%ssl%';"
-          mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
-          mysql -uroot -proot -e "SELECT 1"
+          mysql -uroot -e "\\s"
+          mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
+          mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+          mysql -uroot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
