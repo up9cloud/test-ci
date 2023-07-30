@@ -33,7 +33,7 @@ jobs:
           mysql-version: "8.0"
       - name: Up mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
-          mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+        run:
 #           set +e
 #           sudo systemctl start mysql.service
 #           code=$?
@@ -43,6 +43,7 @@ jobs:
 #           fi
 #           set -e
 #           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+          mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
