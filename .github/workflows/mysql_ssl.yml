@@ -12,42 +12,39 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+      - id: setup-mysql
+        name: Up mysql (Linux)
+        uses: shogo82148/actions-setup-mysql@v1
+        if: matrix.backend == 'mysql'
+        with:
+          mysql-version: "8.0"
+          auto-start: false
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
       - name: Setup mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
           pwd
-          ls -al /etc/mysql/
-          ls -al /etc/mysql/conf.d/
-          ls -al /etc/mysql/mysql.conf.d/
-          sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
+          ls -al ${{ steps.setup-mysql.outputs.base-dir }}
+          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/
+          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/conf.d/
+          ls -al ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/mysql.conf.d/
+          sudo cp mysql/ssl.cnf ${{ steps.setup-mysql.outputs.base-dir }}/etc/mysql/conf.d/
           sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           ls -al /tmp/ssl
-          sudo cat /tmp/ssl/*.pem
-      - id: setup-mysql
-        name: Up mysql (Linux)
-        uses: shogo82148/actions-setup-mysql@v1
+      - name: Up mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
-        with:
-          mysql-version: "8.0"
-          my-cnf: |
-            ssl-ca="/tmp/ssl/ca.pem"
-            ssl-cert="/tmp/ssl/server-cert.pem"
-            ssl-key="/tmp/ssl/server-key.pem"
-#       - name: Up mysql (Linux)
-#         if: runner.os == 'Linux' && matrix.backend == 'mysql'
-#         run:
-#           set +e
-#           sudo systemctl start mysql.service
-#           code=$?
-#           if [ $code -ne 0 ]; then
-#             journalctl -xeu mysql.service
-#             exit $code
-#           fi
-#           set -e
-#           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+        run:
+          set +e
+          sudo systemctl start mysql.service
+          code=$?
+          if [ $code -ne 0 ]; then
+            journalctl -xeu mysql.service
+            exit $code
+          fi
+          set -e
+          mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
