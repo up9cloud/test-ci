@@ -28,6 +28,7 @@ jobs:
           pwd
           env
           echo ${{ steps.setup-mysql.outputs.base-dir }}
+          which mysql
           ls -al ${MYSQL_BASE_DIR}
           ls -al ${MYSQL_BASE_DIR}/etc/mysql/
           ls -al ${MYSQL_BASE_DIR}/etc/mysql/conf.d/
