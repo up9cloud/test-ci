@@ -27,7 +27,7 @@ jobs:
         run: |
           pwd
           env
-          echo ${{ steps.setup-mysql.outputs.base-dir }}
+          echo ${{ steps.setup-mysql.outputs.* }}
           which mysql
           ls -al ${MYSQL_BASE_DIR}
           ls -al ${MYSQL_BASE_DIR}/etc/mysql/
