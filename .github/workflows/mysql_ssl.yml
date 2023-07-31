@@ -34,9 +34,10 @@ jobs:
           pwd
           env
           bash mysql/mysql_ssl_rsa_setup.sh /c/Users/RUNNER~1/AppData/Local/Temp/ssl
+          bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
           bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /c/Users/RUNNER~1/AppData/Local/Temp/ssl
-          ls -al /c/Temp
+          ls -al /c/Temp/ssl
           ls -al /tmp/ssl
 
       - id: setup-mysql-unix
@@ -57,9 +58,9 @@ jobs:
         with:
           mysql-version: "8.0"
           my-cnf: |
-            ssl_ca="C:\\Temp\\ssl\\ca.pem"
-            ssl_cert="C:\\Temp\\ssl\\server-cert.pem"
-            ssl_key="C:\\Temp\\ssl\\server-key.pem"
+            ssl_ca="C:\Temp\ssl\ca.pem"
+            ssl_cert="C:\Temp\ssl\server-cert.pem"
+            ssl_key="C:\Temp\ssl\server-key.pem"
 
       - name: Create mysql account for ssl
         if: matrix.backend == 'mysql'
@@ -67,13 +68,7 @@ jobs:
           mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Show mysql setting
-        if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
-        run: |
-          mysql -uroot -e "\\s"
-          mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
-          mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
-      - name: Show mysql setting
-        if: matrix.backend == 'mysql' && runner.os == 'Windows'
+        if: matrix.backend == 'mysql'
         shell: bash
         run: |
           mysql -uroot -e "\\s"
