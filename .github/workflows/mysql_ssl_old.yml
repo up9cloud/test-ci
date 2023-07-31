@@ -7,7 +7,10 @@ jobs:
       fail-fast: false
       matrix:
         backend: ["mysql"]
-        os: [ubuntu-latest, macos-latest, windows-2019]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-2019
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout sources
@@ -21,9 +24,9 @@ jobs:
           ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
-          sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
+          #sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
       - name: Up mysql (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
@@ -38,14 +41,16 @@ jobs:
           set -e
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
-      - name: Test mysql (Linux) connection
+      - name: Show mysql setting (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
-          sudo chown -R mysql:mysql /tmp/ssl
-          ls -al /tmp/ssl
           mysql -uroot -proot -e "\\s"
           mysql -uroot -proot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+
+      - name: Test mysql connection (Linux)
+        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        run: |
           mysql -uroot -proot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
