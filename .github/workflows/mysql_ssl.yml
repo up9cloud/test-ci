@@ -12,53 +12,46 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+      # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
+      - name: Generate ssl certs (Linux)
+        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        run: |
+          pwd
+          env
+          which mysql
+          sudo mkdir -p /tmp/ssl
+          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
+          #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
+          ls -al /tmp/ssl
       - id: setup-mysql
         name: Up mysql
         uses: shogo82148/actions-setup-mysql@v1
         if: matrix.backend == 'mysql'
         with:
           mysql-version: "8.0"
-          auto-start: false
-      # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
-      - name: Setup mysql (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
-        env:
-          MYSQL_BASE_DIR: ${{ steps.setup-mysql.outputs.base-dir }}
-        run: |
-          pwd
-          env
-          echo ${{join(steps.run_tests.outputs.*, '\n')}}
-          which mysql
-          ls -al ${MYSQL_BASE_DIR}
-          ls -al ${MYSQL_BASE_DIR}/etc/mysql/
-          ls -al ${MYSQL_BASE_DIR}/etc/mysql/conf.d/
-          ls -al ${MYSQL_BASE_DIR}/etc/mysql/mysql.conf.d/
-          sudo cp mysql/ssl.cnf ${MYSQL_BASE_DIR}/etc/mysql/conf.d/
-          sudo mkdir -p /tmp/ssl
-          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
-          ls -al /tmp/ssl
-      - name: Up mysql (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
-        env:
-          MYSQL_BASE_DIR: ${{ steps.setup-mysql.outputs.base-dir }}
-        run: |
-          set +e
-          ${{ steps.setup-mysql.outputs.base-dir }}/bin/mysqld \
-            --defaults-file=${MYSQL_BASE_DIR}/etc/my.cnf \
-            --user=root
-          code=$?
-          if [ $code -ne 0 ]; then
-            exit $code
-          fi
-          set -e
-          mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
-
+          my-cnf: |
+            ssl-ca="/tmp/ssl/ca.pem"
+            ssl-cert="/tmp/ssl/server-cert.pem"
+            ssl-key="/tmp/ssl/server-key.pem"
+#       - name: Up mysql (Linux)
+#         if: runner.os == 'Linux' && matrix.backend == 'mysql'
+#         env:
+#           MYSQL_BASE_DIR: ${{ steps.setup-mysql.outputs.base-dir }}
+#         run: |
+#           set +e
+#           ${{ steps.setup-mysql.outputs.base-dir }}/bin/mysqld \
+#             --defaults-file=${MYSQL_BASE_DIR}/etc/my.cnf \
+#             --user=root
+#           code=$?
+#           if [ $code -ne 0 ]; then
+#             exit $code
+#           fi
+#           set -e
+#           mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Test mysql (Linux) connection
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
           sudo chown -R mysql:mysql /tmp/ssl
-          ls -al /tmp/ssl
           mysql -uroot -e "\\s"
           mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
