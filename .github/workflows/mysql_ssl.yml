@@ -43,9 +43,9 @@ jobs:
           touch /c/Temp/ssl/temp
           ls -al /c/Temp/ssl
           
-          bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          touch /tmp/ssl/tmp
-          ls -al /tmp/ssl
+          #bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
+          #touch /tmp/ssl/tmp
+          #ls -al /tmp/ssl
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
@@ -65,9 +65,9 @@ jobs:
         with:
           mysql-version: "8.0"
           my-cnf: |
-            ssl_ca=C:\Temp\ssl\ca.pem
-            ssl_cert=C:\Temp\ssl\server-cert.pem
-            ssl_key=C:\Temp\ssl\server-key.pem
+            ssl_ca=C:\\Temp\\ssl\\ca.pem
+            ssl_cert=C:\\Temp\\ssl\\server-cert.pem
+            ssl_key=C:\\Temp\\ssl\\server-key.pem
 
       - name: Create mysql account for ssl
         if: matrix.backend == 'mysql'
