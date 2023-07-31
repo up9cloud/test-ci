@@ -40,14 +40,12 @@ jobs:
           fi
           set -e
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
-
       - name: Show mysql setting (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
           mysql -uroot -proot -e "\\s"
           mysql -uroot -proot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
-
       - name: Test mysql connection (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
         run: |
@@ -55,6 +53,11 @@ jobs:
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
+      - name: Setup mysql (MacOS)
+        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        run: |
+          bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
+          ls -al /tmp/ssl
       - name: Install mysql (MacOS)
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
@@ -63,41 +66,48 @@ jobs:
           ls -al $(brew --prefix mariadb@10.5)/conf.d/
           ls -al $(brew --prefix mariadb@10.5)/mysql.conf.d/
           cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/conf.d
-          mkdir -p /tmp/ssl
-          bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          ls -al /tmp/ssl
           $(brew --prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
-          $(brew --prefix mariadb@10.5)/bin/mysql -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -urunner
-
-      - name: Test mysql (MacOS) connection
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+      - name: Show mysql setting (macOS)
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
-          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "\\s"
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SHOW VARIABLES LIKE '%ssl%';"
+          $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+      - name: Test mysql connection (MacOS)
+        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
           $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
           $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
 
-      - name: Install mysql (Windows) pre
+      - name: Setup mysql (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: bash
+        env:
+          MSYS_NO_PATHCONV: 1
         run: |
-          ls -al
-          bash mysql/mysql_ssl_rsa_setup.sh C:\Temp
-
+          bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
+          ls -al /c/Temp/ssl
       - name: Install mysql (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
         run: |
-          dir /a
           choco install mysql
-          "C:\tools\mysql\current\bin\mysql" -e "CREATE user 'ssl'@'%' REQUIRE SSL;" -uroot
-
-      - name: Test mysql (Windows) connection
+          cp mysql/ssl.cnf C:\tools\mysql\current\conf.d
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+      - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
         run: |
-          "C:\tools\mysql\current\bin\mysql" -uroot -e "\\s; SHOW VARIABLES LIKE '%ssl%';"
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "\s"
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+      - name: Test mysql connection (Windows)
+        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        shell: cmd
+        run: |
           "C:\tools\mysql\current\bin\mysql" -uroot -e "SELECT 1"
-          "C:\tools\mysql\current\bin\mysql" -ussl --ssl-ca=C:\tools\mysql\current\lib -e "SELECT 1"
-          "C:\tools\mysql\current\bin\mysql" -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+          "C:\tools\mysql\current\bin\mysql" -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
+          "C:\tools\mysql\current\bin\mysql" -ussl --ssl-cert=C:\Temp\ssl\client-cert.pem --ssl-key=C:\Temp\ssl\client-key.pem -e "SELECT 3"
