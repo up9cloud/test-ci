@@ -32,8 +32,8 @@ jobs:
           MSYS_NO_PATHCONV: 1
         run: |
           ls -al
-          bash mysql/mysql_ssl_rsa_setup.sh C:\Temp
-          ls -al C:\Temp\ssl
+          bash mysql/mysql_ssl_rsa_setup.sh C:\\Temp
+          ls -al C:\\Temp\\ssl
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
