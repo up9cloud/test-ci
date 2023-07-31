@@ -65,7 +65,8 @@ jobs:
           ls -al $(brew --prefix mariadb@10.5)/
           ls -al $(brew --prefix mariadb@10.5)/support-files/
           ls -al /usr/local/etc/
-          cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/support-files/
+          ls -al /usr/local/etc/my.cnf.d
+          cp mysql/ssl.cnf /usr/local/etc/my.cnf.d/
           $(brew --prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
@@ -104,6 +105,10 @@ jobs:
           tail -n 4 mysql/ssl.win.cnf >> /c/tools/mysql/current/my.ini
           cat /c/tools/mysql/current/my.ini
           /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
+          
+          /c/tools/mysql/current/bin/mysqladmin -uroot shutdown
+          sleep 3
+          /c/tools/mysql/current/bin/mysqld
       - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: bash
