@@ -65,9 +65,9 @@ jobs:
         with:
           mysql-version: "8.0"
           my-cnf: |
-            ssl_ca=%Temp%\ssl\ca.pem
-            ssl_cert=%Temp%\ssl\server-cert.pem
-            ssl_key=%Temp%\ssl\server-key.pem
+            ssl_ca=C:\Temp\ssl\ca.pem
+            ssl_cert=C:\Temp\ssl\server-cert.pem
+            ssl_key=C:\Temp\ssl\server-key.pem
 
       - name: Create mysql account for ssl
         if: matrix.backend == 'mysql'
