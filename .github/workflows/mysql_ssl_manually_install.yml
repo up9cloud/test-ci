@@ -25,6 +25,7 @@ jobs:
       - name: Install mysql (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get purge mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
           sudo apt install mysql-server
       - name: Configure mysql (Linux)
         if: runner.os == 'Linux'
