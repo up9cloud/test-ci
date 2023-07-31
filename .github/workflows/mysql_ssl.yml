@@ -18,10 +18,8 @@ jobs:
         run: |
           pwd
           env
-          sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
-          #sudo chown -R mysql:mysql /tmp/ssl
           sudo chmod +r /tmp/ssl/server-key.pem
           sudo chmod +r /tmp/ssl/client-key.pem
           ls -al /tmp/ssl
@@ -33,19 +31,11 @@ jobs:
         run: |
           pwd
           env
-          
           # /c/Temp === /c/Users/RUNNER~1/AppData/Local/Temp
-          #bash mysql/mysql_ssl_rsa_setup.sh /c/Users/RUNNER~1/AppData/Local/Temp/ssl
-          #touch /c/Users/RUNNER~1/AppData/Local/Temp/ssl/c_app_data_temp
-          #ls -al /c/Users/RUNNER~1/AppData/Local/Temp/ssl
-          
+          # /c/Temp => C:\Temp\ssl
+          # /tmp === 
           bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
-          touch /c/Temp/ssl/temp
           ls -al /c/Temp/ssl
-          
-          #bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          #touch /tmp/ssl/tmp
-          #ls -al /tmp/ssl
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
@@ -92,6 +82,6 @@ jobs:
       - name: Test mysql ssl connection (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         run: |
-          dir C:\Temp\ssl
+          mysql -uroot -e "SELECT 1"
           mysql -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=C:\Temp\ssl\client-cert.pem --ssl-key=C:\Temp\ssl\client-key.pem -e "SELECT 3"
