@@ -95,6 +95,7 @@ jobs:
         shell: cmd
         run: |
           choco install mysql
+          dir C:\tools\mysql\current
           cp mysql/ssl.cnf C:\tools\mysql\current\conf.d
           "C:\tools\mysql\current\bin\mysql" -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
