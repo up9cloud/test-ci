@@ -31,9 +31,9 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           ls -al /etc/mysql/
-          ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
+          ls -al /etc/mysql/conf.d/
       - name: Up mysql (Linux)
         if: runner.os == 'Linux'
         run: |
