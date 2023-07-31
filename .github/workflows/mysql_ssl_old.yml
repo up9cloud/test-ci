@@ -101,15 +101,16 @@ jobs:
         run: |
           dir C:\tools\mysql\current
           type C:\tools\mysql\current\my.ini
-          cp mysql/ssl.cnf C:\tools\mysql\current\conf.d
+          type mysql/ssl.win.cnf >> C:\tools\mysql\current\my.ini
+          type C:\tools\mysql\current\my.ini
           "C:\tools\mysql\current\bin\mysql" -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
         run: |
           "C:\tools\mysql\current\bin\mysql" -uroot -e "\s"
-          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW VARIABLES LIKE "'"%ssl%"'";"
-          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW VARIABLES LIKE ''%ssl%'';"
+          "C:\tools\mysql\current\bin\mysql" -uroot -e "SHOW GLOBAL STATUS LIKE ''current_tls%'';"
       - name: Test mysql connection (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: cmd
