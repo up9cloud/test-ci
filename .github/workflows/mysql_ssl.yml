@@ -31,9 +31,10 @@ jobs:
         env:
           MSYS_NO_PATHCONV: 1
         run: |
-          ls -al
+          pwd
+          env
           bash mysql/mysql_ssl_rsa_setup.sh C:\\Temp
-          ls -al C:\\Temp\\ssl
+          ls -al /
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
@@ -63,9 +64,15 @@ jobs:
           mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
 
       - name: Show mysql setting
-        if: matrix.backend == 'mysql'
+        if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
         run: |
-          mysql -uroot -e '\\s'
+          mysql -uroot -e "\\s"
+          mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
+          mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
+      - name: Show mysql setting
+        if: matrix.backend == 'mysql' && runner.os == 'Windows'
+        run: |
+          mysql -uroot -e "\\\\s"
           mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
 
