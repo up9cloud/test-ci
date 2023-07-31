@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
-      - name: Setup mysql (Linux)
+      - name: Create ssl certs (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
@@ -27,9 +27,10 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           ls -al /etc/mysql/
-          ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
+          sudo cat /etc/mysql/my.cnf
+          ls -al /etc/mysql/conf.d/
       - name: Up mysql (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -58,7 +59,7 @@ jobs:
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
-      - name: Setup mysql (MacOS)
+      - name: Create ssl certs (MacOS)
         if: runner.os == 'macOS'
         run: |
           bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
@@ -90,7 +91,7 @@ jobs:
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
-      - name: Setup mysql (Windows)
+      - name: Create ssl certs (Windows)
         if: runner.os == 'Windows'
         shell: bash
         env:
