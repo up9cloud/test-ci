@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
       - name: Generate mysql ssl certs (Linux, macOS)
-        if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
+        if: runner.os == 'Linux' || runner.os == 'macOS'
         run: |
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
