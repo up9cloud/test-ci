@@ -1,0 +1,5 @@
+[mysqld]
+ssl=on
+ssl_ca="C:\\Temp\\ssl\\ca.pem"
+ssl_cert="C:\\Temp\\ssl\\server-cert.pem"
+ssl_key="C:\\Temp\\ssl\\server-key.pem"
