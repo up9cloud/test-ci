@@ -100,6 +100,7 @@ jobs:
         shell: cmd
         run: |
           dir C:\tools\mysql\current
+          type C:\tools\mysql\current\my.ini
           cp mysql/ssl.cnf C:\tools\mysql\current\conf.d
           "C:\tools\mysql\current\bin\mysql" -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
