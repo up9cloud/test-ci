@@ -101,7 +101,7 @@ jobs:
         run: |
           ls -al /c/tools/mysql/current
           cat /c/tools/mysql/current/my.ini
-          cat mysql/ssl.win.cnf >> /c/tools/mysql/current/my.ini
+          tail -n 4 mysql/ssl.win.cnf >> /c/tools/mysql/current/my.ini
           cat /c/tools/mysql/current/my.ini
           /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
