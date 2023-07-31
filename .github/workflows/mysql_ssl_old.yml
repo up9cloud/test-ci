@@ -63,9 +63,8 @@ jobs:
         run: |
           brew install mariadb@10.5
           ls -al $(brew --prefix mariadb@10.5)/
-          ls -al $(brew --prefix mariadb@10.5)/conf.d/
-          ls -al $(brew --prefix mariadb@10.5)/mysql.conf.d/
-          cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/conf.d
+          ls -al $(brew --prefix mariadb@10.5)/support-files/
+          cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/support-files/
           $(brew --prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
