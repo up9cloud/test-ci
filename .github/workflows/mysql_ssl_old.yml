@@ -64,6 +64,7 @@ jobs:
           brew install mariadb@10.5
           ls -al $(brew --prefix mariadb@10.5)/
           ls -al $(brew --prefix mariadb@10.5)/support-files/
+          ls -al /usr/local/etc/
           cp mysql/ssl.cnf $(brew prefix mariadb@10.5)/support-files/
           $(brew --prefix mariadb@10.5)/bin/mysql.server start
           sleep 3
