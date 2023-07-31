@@ -23,6 +23,7 @@ jobs:
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           #sudo chown -R mysql:mysql /tmp/ssl
           sudo chmod +r /tmp/ssl/server-key.pem
+          sudo chmod +r /tmp/ssl/client-key.pem
           ls -al /tmp/ssl
       - name: Generate mysql ssl certs (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
