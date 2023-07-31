@@ -49,13 +49,13 @@ jobs:
         run: |
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        if: runner.os == 'Linux'
         run: |
           mysql -uroot -proot -e "\\s"
           mysql -uroot -proot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -proot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
       - name: Test mysql connection (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        if: runner.os == 'Linux'
         run: |
           mysql -uroot -proot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
@@ -87,13 +87,13 @@ jobs:
         run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (macOS)
-        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        if: runner.os == 'macOS'
         run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "\\s"
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SHOW VARIABLES LIKE '%ssl%';"
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
       - name: Test mysql connection (MacOS)
-        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        if: runner.os == 'macOS'
         run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
           $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
@@ -132,14 +132,14 @@ jobs:
         run: |
           /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        if: runner.os == 'Windows'
         shell: bash
         run: |
           /c/tools/mysql/current/bin/mysql -uroot -e "\\s"
           /c/tools/mysql/current/bin/mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           /c/tools/mysql/current/bin/mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
       - name: Test mysql connection (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           "C:\tools\mysql\current\bin\mysql" -uroot -e "SELECT 1"
