@@ -105,11 +105,12 @@ jobs:
           tail -n 4 mysql/ssl.win.cnf >> /c/tools/mysql/current/my.ini
           cat /c/tools/mysql/current/my.ini
           /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
-          
-          /c/tools/mysql/current/bin/mysqladmin -uroot shutdown
-          sleep 3
-          /c/tools/mysql/current/bin/mysqld
-          sleep 3
+      - name: Install mysql 3 (Windows)
+        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        shell: cmd
+        run: |
+          net stop MySQL   
+          net start MySQL
       - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: bash
