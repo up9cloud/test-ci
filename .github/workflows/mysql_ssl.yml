@@ -93,8 +93,6 @@ jobs:
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         shell: bash
         run: |
-          ls -al /c/Temp/ssl
-          ls -al /tmp/ssl
           mysql -ussl --ssl-ca=/c/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/c/tmp/ssl/client-cert.pem --ssl-key=/c/tmp/ssl/client-key.pem -e "SELECT 3"
           mysql -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
