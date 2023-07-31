@@ -47,7 +47,7 @@ function x509_key() {
 	openssl req -newkey rsa:2048 \
 		-days $validity -nodes \
 		-keyout $key_file \
-		-subj /CN=MySQL_Server_${suffix_string}${suffix} \
+		-subj "/CN=MySQL_Server_${suffix_string}${suffix}" \
 		-out $req_file
 	local code=$?
 	if [ $code -eq 0 ]; then
