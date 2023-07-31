@@ -33,10 +33,11 @@ jobs:
         run: |
           pwd
           env
-          bash mysql/mysql_ssl_rsa_setup.sh /c/Users/RUNNER~1/AppData/Local/Temp
+          bash mysql/mysql_ssl_rsa_setup.sh /c/Users/RUNNER~1/AppData/Local/Temp/ssl
           ls -al /
-          ls -al /c/Users/RUNNER~1/AppData/Local/Temp/
+          ls -al /c/Users/RUNNER~1/AppData/Local/Temp/ssl
           ls -al /c/Temp
+          ls -al /c/Temp/ssl
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
@@ -73,8 +74,9 @@ jobs:
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
       - name: Show mysql setting
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
+        shell: bash
         run: |
-          mysql -uroot -e "\\\s"
+          mysql -uroot -e "\\s"
           mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
 
