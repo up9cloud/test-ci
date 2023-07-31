@@ -15,21 +15,23 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+
       # https://dev.mysql.com/doc/refman/5.7/en/option-files.html
-      - name: Install mysql (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+      - name: Setup mysql (Linux)
+        if: runner.os == 'Linux'
         run: |
-          pwd
+          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
+          #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
+          ls -al /tmp/ssl
+      - name: Configure mysql (Linux)
+        if: runner.os == 'Linux'
+        run: |
           ls -al /etc/mysql/
           ls -al /etc/mysql/conf.d/
           ls -al /etc/mysql/mysql.conf.d/
           sudo cp mysql/ssl.cnf /etc/mysql/conf.d/
-          sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
-          #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
-          #sudo chown -R mysql:mysql /tmp/ssl
-          ls -al /tmp/ssl
       - name: Up mysql (Linux)
-        if: runner.os == 'Linux' && matrix.backend == 'mysql'
+        if: runner.os == 'Linux'
         run: |
           set +e
           sudo systemctl start mysql.service
@@ -39,6 +41,9 @@ jobs:
             exit $code
           fi
           set -e
+      - name: Create mysql ssl account (Linux)
+        if: runner.os == 'Linux'
+        run: |
           mysql -uroot -proot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Linux)
         if: runner.os == 'Linux' && matrix.backend == 'mysql'
@@ -54,21 +59,29 @@ jobs:
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
       - name: Setup mysql (MacOS)
-        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        if: runner.os == 'macOS'
         run: |
           bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
       - name: Install mysql (MacOS)
-        if: runner.os == 'macOS' && matrix.backend == 'mysql'
+        if: runner.os == 'macOS'
         run: |
           brew install mariadb@10.5
+      - name: Configure mysql (MacOS)
+        if: runner.os == 'macOS'
+        run: |
           ls -al $(brew --prefix mariadb@10.5)/
           ls -al $(brew --prefix mariadb@10.5)/support-files/
           ls -al /usr/local/etc/
           ls -al /usr/local/etc/my.cnf.d
           cp mysql/ssl.cnf /usr/local/etc/my.cnf.d/
+      - name: Up mysql (MacOS)
+        if: runner.os == 'macOS'
+        run: |
           $(brew --prefix mariadb@10.5)/bin/mysql.server start
-          sleep 3
+      - name: Create mysql ssl account (MacOS)
+        if: runner.os == 'macOS'
+        run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (macOS)
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
@@ -84,7 +97,7 @@ jobs:
           $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
       - name: Setup mysql (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        if: runner.os == 'Windows'
         shell: bash
         env:
           MSYS_NO_PATHCONV: 1
@@ -92,25 +105,29 @@ jobs:
           bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
           ls -al /c/Temp/ssl
       - name: Install mysql (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           choco install mysql
-      - name: Install mysql 2 (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+      - name: Configure mysql (Windows)
+        if: runner.os == 'Windows'
         shell: bash
         run: |
           ls -al /c/tools/mysql/current
           cat /c/tools/mysql/current/my.ini
           tail -n 4 mysql/ssl.win.cnf >> /c/tools/mysql/current/my.ini
           cat /c/tools/mysql/current/my.ini
-          /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
-      - name: Install mysql 3 (Windows)
-        if: runner.os == 'Windows' && matrix.backend == 'mysql'
+      - name: Restart mysql (Windows)
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           net stop MySQL   
           net start MySQL
+      - name: Create mysql ssl account (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          /c/tools/mysql/current/bin/mysql -uroot -e "CREATE user 'ssl'@'%' REQUIRE SSL;"
       - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: bash
