@@ -21,7 +21,7 @@ jobs:
           sudo mkdir -p /tmp/ssl
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
-          sudo chown -R mysql:mysql /tmp/ssl
+          #sudo chown -R mysql:mysql /tmp/ssl
           ls -al /tmp/ssl
       - name: Generate mysql ssl certs (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
