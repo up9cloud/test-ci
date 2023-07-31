@@ -80,8 +80,8 @@ jobs:
         if: runner.os == 'macOS' && matrix.backend == 'mysql'
         run: |
           $(brew --prefix mariadb@10.5)/bin/mysql -urunner -e "SELECT 1"
-          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 1"
-          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 1"
+          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
+          $(brew --prefix mariadb@10.5)/bin/mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
       - name: Setup mysql (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
@@ -109,6 +109,7 @@ jobs:
           /c/tools/mysql/current/bin/mysqladmin -uroot shutdown
           sleep 3
           /c/tools/mysql/current/bin/mysqld
+          sleep 3
       - name: Show mysql setting (Windows)
         if: runner.os == 'Windows' && matrix.backend == 'mysql'
         shell: bash
