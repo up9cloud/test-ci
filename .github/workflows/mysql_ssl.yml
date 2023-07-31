@@ -65,11 +65,11 @@ jobs:
           mysql -uroot -e "\\s"
           mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
-          mysql -uroot -e "SELECT 1"
 
       - name: Test mysql ssl connection (Linux, macOS)
         if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
         run: |
+          mysql -uroot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
