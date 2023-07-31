@@ -91,9 +91,7 @@ jobs:
 
       - name: Test mysql ssl connection (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
-        shell: bash
         run: |
-          mysql -ussl --ssl-ca=/c/tmp/ssl/ca.pem -e "SELECT 2"
-          mysql -ussl --ssl-cert=/c/tmp/ssl/client-cert.pem --ssl-key=/c/tmp/ssl/client-key.pem -e "SELECT 3"
+          dir /Temp/ssl
           mysql -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=C:\Temp\ssl\client-cert.pem --ssl-key=C:\Temp\ssl\client-key.pem -e "SELECT 3"
