@@ -34,10 +34,10 @@ jobs:
           pwd
           env
           bash mysql/mysql_ssl_rsa_setup.sh /c/Users/RUNNER~1/AppData/Local/Temp/ssl
-          ls -al /
+          bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /c/Users/RUNNER~1/AppData/Local/Temp/ssl
           ls -al /c/Temp
-          ls -al /c/Temp/ssl
+          ls -al /tmp/ssl
 
       - id: setup-mysql-unix
         name: Up mysql (Linux, macOS)
@@ -91,5 +91,7 @@ jobs:
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         shell: cmd
         run: |
+          dir /Temp/ssl
+          dir /Users/RUNNER~1/AppData/Local/Temp/ssl
           mysql -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=C:\Temp\ssl\client-cert.pem --ssl-key=C:\Temp\ssl\client-key.pem -e "SELECT 3"
