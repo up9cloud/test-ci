@@ -16,29 +16,25 @@ jobs:
       - name: Generate mysql ssl certs (Linux, macOS)
         if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
         run: |
-          pwd
-          env
           sudo bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           #mysql_ssl_rsa_setup --verbose --uid=mysql --datadir=/tmp/ssl
           sudo chmod +r /tmp/ssl/server-key.pem
           sudo chmod +r /tmp/ssl/client-key.pem
           ls -al /tmp/ssl
+
       - name: Generate mysql ssl certs (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         shell: bash
         env:
           MSYS_NO_PATHCONV: 1
         run: |
-          pwd
-          env
           # /c/Temp === /c/Users/RUNNER~1/AppData/Local/Temp
           # /c/Temp => C:\Temp\ssl
           # /tmp === 
           bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
           ls -al /c/Temp/ssl
 
-      - id: setup-mysql-unix
-        name: Up mysql (Linux, macOS)
+      - name: Install mysql (Linux, macOS)
         uses: shogo82148/actions-setup-mysql@v1
         if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
         with:
@@ -48,8 +44,7 @@ jobs:
             ssl_cert="/tmp/ssl/server-cert.pem"
             ssl_key="/tmp/ssl/server-key.pem"
 
-      - id: setup-mysql-windows
-        name: Up mysql (Windows)
+      - name: Install mysql (Windows)
         uses: shogo82148/actions-setup-mysql@v1
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         with:
@@ -72,16 +67,19 @@ jobs:
           mysql -uroot -e "SHOW VARIABLES LIKE '%ssl%';"
           mysql -uroot -e "SHOW GLOBAL STATUS LIKE 'current_tls%';"
 
+      - name: Test mysql connection
+        if: matrix.backend == 'mysql'
+        run: |
+          mysql -uroot -e "SELECT 1"
+
       - name: Test mysql ssl connection (Linux, macOS)
         if: matrix.backend == 'mysql' && (runner.os == 'Linux' || runner.os == 'macOS')
         run: |
-          mysql -uroot -e "SELECT 1"
           mysql -ussl --ssl-ca=/tmp/ssl/ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=/tmp/ssl/client-cert.pem --ssl-key=/tmp/ssl/client-key.pem -e "SELECT 3"
 
       - name: Test mysql ssl connection (Windows)
         if: matrix.backend == 'mysql' && runner.os == 'Windows'
         run: |
-          mysql -uroot -e "SELECT 1"
           mysql -ussl --ssl-ca=C:\Temp\ssl\ca.pem -e "SELECT 2"
           mysql -ussl --ssl-cert=C:\Temp\ssl\client-cert.pem --ssl-key=C:\Temp\ssl\client-key.pem -e "SELECT 3"
