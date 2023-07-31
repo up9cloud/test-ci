@@ -63,10 +63,6 @@ jobs:
         run: |
           bash mysql/mysql_ssl_rsa_setup.sh /tmp/ssl
           ls -al /tmp/ssl
-      - name: Install mysql (MacOS)
-        if: runner.os == 'macOS'
-        run: |
-          mysql
       - name: Configure mysql (MacOS)
         if: runner.os == 'macOS'
         run: |
@@ -102,11 +98,6 @@ jobs:
         run: |
           bash mysql/mysql_ssl_rsa_setup.sh /c/Temp/ssl
           ls -al /c/Temp/ssl
-      - name: Install mysql (Windows)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: |
-          mysql
       - name: Configure mysql (Windows)
         if: runner.os == 'Windows'
         shell: bash
